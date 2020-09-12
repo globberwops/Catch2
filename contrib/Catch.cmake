@@ -118,7 +118,7 @@ function(catch_discover_tests TARGET)
   endif()
 
   ## Generate a unique name based on the extra arguments
-  string(SHA1 args_hash "${_TEST_SPEC} ${_EXTRA_ARGS}")
+  string(SHA1 args_hash "${_TEST_SPEC} ${_EXTRA_ARGS} ${XML_OUTPUT_DIR}")
   string(SUBSTRING ${args_hash} 0 7 args_hash)
 
   # Define rule to generate test list for aforementioned test executable
