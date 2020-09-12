@@ -33,6 +33,7 @@ same as the Catch name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
                          [TEST_SUFFIX suffix]
                          [PROPERTIES name1 value1...]
                          [TEST_LIST var]
+                         [XML_OUTPUT_DIR dir]
     )
 
   ``catch_discover_tests`` sets up a post-build command on the test executable
@@ -90,6 +91,13 @@ same as the Catch name; see also ``TEST_PREFIX`` and ``TEST_SUFFIX``.
     executable is being used in multiple calls to ``catch_discover_tests()``.
     Note that this variable is only available in CTest.
 
+  ``XML_OUTPUT_DIR dir``
+    If specified, the parameter is passed along with ``-r junit -o``
+    to test executable. The actual file name is the same as the test target,
+    including prefix and suffix. This should be used instead of
+    ``EXTRA_ARGS -r junit -o`` to avoid race conditions writing the
+    XML result output when using parallel test execution.
+
 #]=======================================================================]
 
 #------------------------------------------------------------------------------
@@ -97,7 +105,7 @@ function(catch_discover_tests TARGET)
   cmake_parse_arguments(
     ""
     ""
-    "TEST_PREFIX;TEST_SUFFIX;WORKING_DIRECTORY;TEST_LIST"
+    "TEST_PREFIX;TEST_SUFFIX;WORKING_DIRECTORY;TEST_LIST;XML_OUTPUT_DIR"
     "TEST_SPEC;EXTRA_ARGS;PROPERTIES"
     ${ARGN}
   )
@@ -134,6 +142,7 @@ function(catch_discover_tests TARGET)
             -D "TEST_PREFIX=${_TEST_PREFIX}"
             -D "TEST_SUFFIX=${_TEST_SUFFIX}"
             -D "TEST_LIST=${_TEST_LIST}"
+            -D "TEST_XML_OUTPUT_DIR=${_XML_OUTPUT_DIR}"
             -D "CTEST_FILE=${ctest_tests_file}"
             -P "${_CATCH_DISCOVER_TESTS_SCRIPT}"
     VERBATIM

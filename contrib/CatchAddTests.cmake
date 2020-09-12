@@ -6,6 +6,7 @@ set(suffix "${TEST_SUFFIX}")
 set(spec ${TEST_SPEC})
 set(extra_args ${TEST_EXTRA_ARGS})
 set(properties ${TEST_PROPERTIES})
+set(xml_output_dir ${TEST_XML_OUTPUT_DIR})
 set(script)
 set(suite)
 set(tests)
@@ -48,6 +49,14 @@ endif()
 
 string(REPLACE "\n" ";" output "${output}")
 
+# Prepare xml output dir
+if(xml_output_dir AND NOT IS_ABSOLUTE ${xml_output_dir})
+  set(xml_output_dir "${TEST_WORKING_DIR}/${xml_output_dir}")
+  if(NOT EXISTS ${xml_output_dir})
+    file(MAKE_DIRECTORY ${xml_output_dir})
+  endif()
+endif()
+
 # Parse output
 foreach(line ${output})
   set(test ${line})
@@ -56,6 +65,11 @@ foreach(line ${output})
   foreach(char , [ ])
     string(REPLACE ${char} "\\${char}" test_name ${test_name})
   endforeach(char)
+  # ...add xml output dir
+  if(xml_output_dir)
+    string(REGEX REPLACE "[^A-Za-z0-9_]" "_" test_name_clean ${test_name})
+    set(xml_output_arg "-r junit;-o ${xml_output_dir}/${test_name_clean}.xml")
+  endif()
   # ...and add to script
   add_command(add_test
     "${prefix}${test}${suffix}"
@@ -63,6 +77,7 @@ foreach(line ${output})
     "${TEST_EXECUTABLE}"
     "${test_name}"
     ${extra_args}
+    "${xml_output_arg}"
   )
   add_command(set_tests_properties
     "${prefix}${test}${suffix}"
