@@ -83,6 +83,7 @@ catch_discover_tests(target
                      [TEST_SUFFIX suffix]
                      [PROPERTIES name1 value1...]
                      [TEST_LIST var]
+                     [XML_OUTPUT_DIR dir]
 )
 ```
 
@@ -128,6 +129,14 @@ Make the list of tests available in the variable `var`, rather than the
 default `<target>_TESTS`.  This can be useful when the same test
 executable is being used in multiple calls to `catch_discover_tests()`.
 Note that this variable is only available in CTest.
+
+* `XML_OUTPUT_DIR dir`
+
+If specified, the parameter is passed along with `-r junit -o`
+to test executable. The actual file name is the same as the test target,
+including prefix and suffix. This should be used instead of
+`EXTRA_ARGS -r junit -o` to avoid race conditions writing the
+XML result output when using parallel test execution.
 
 
 ### `ParseAndAddCatchTests.cmake`
